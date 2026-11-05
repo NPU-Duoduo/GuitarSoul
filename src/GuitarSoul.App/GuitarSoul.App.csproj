@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <AssemblyName>GuitarSoul</AssemblyName>
+    <Version>0.15.3</Version>
+    <Product>GuitarSoul</Product>
+    <Title>GuitarSoul</Title>
+    <Authors>Duoduo_127</Authors>
+    <Company>Duoduo_127</Company>
+    <Copyright>Copyright © 2026 Duoduo_127</Copyright>
+    <ApplicationIcon>Assets/guitar-soul-icon-v1.ico</ApplicationIcon>
+    <OutputPath>bin\$(Configuration)\$(Version)\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Resource Include="Assets/guitar-soul-icon-v1.ico" />
+    <Resource Include="Assets/rehearsal-room-reference-v1.png" />
+    <Resource Include="Assets/rehearsal-room-window-v1.png" />
+    <Resource Include="Assets/amp-head-shell-v1.png" />
+    <Using Remove="System.Windows.Forms" />
+    <Using Remove="System.Drawing" />
+    <ProjectReference Include="../GuitarSoul.Core/GuitarSoul.Core.csproj" />
+    <ProjectReference Include="../GuitarSoul.Audio.Windows/GuitarSoul.Audio.Windows.csproj" />
+    <None Include="../GuitarSoul.Core/profiles/devices.json" Link="profiles/devices.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,10 @@
+.tools/
+**/bin/
+**/obj/
+.vs/
+*.user
+dist/
+artifacts/
+recordings/
+*.wav
+*.log

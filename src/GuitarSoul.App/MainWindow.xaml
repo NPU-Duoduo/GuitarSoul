@@ -1,0 +1,783 @@
+<Window x:Class="GuitarSoul.App.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:pet="clr-namespace:GuitarSoul.App.Controls" Title="GuitarSoul" Icon="Assets/guitar-soul-icon-v1.ico" Width="1180" Height="800" MinWidth="1104" MinHeight="716" WindowStartupLocation="CenterScreen" WindowStyle="None" ResizeMode="CanResize" Background="#0A0F0C" FontFamily="Microsoft YaHei UI, Segoe UI" UseLayoutRounding="True" SnapsToDevicePixels="True">
+  <WindowChrome.WindowChrome>
+    <WindowChrome CaptionHeight="40" ResizeBorderThickness="6" GlassFrameThickness="0" CornerRadius="0" UseAeroCaptionButtons="False"/>
+  </WindowChrome.WindowChrome>
+  <Window.Resources>
+    <!-- Powder-coated graphite, restrained bronze and readable ivory equipment markings. -->
+    <SolidColorBrush x:Key="Paper" Color="#1A211D"/>
+    <SolidColorBrush x:Key="PanelInk" Color="#E8E2D3"/>
+    <SolidColorBrush x:Key="PanelMuted" Color="#ABB3A3"/>
+    <SolidColorBrush x:Key="PanelLine" Color="#434C41"/>
+    <SolidColorBrush x:Key="PanelField" Color="#141D18"/>
+    <SolidColorBrush x:Key="PanelFieldLine" Color="#53604D"/>
+    <SolidColorBrush x:Key="Forest" Color="#2E4A39"/>
+    <SolidColorBrush x:Key="ForestHover" Color="#3A5A46"/>
+    <SolidColorBrush x:Key="AccentInk" Color="#B9CBA0"/>
+    <SolidColorBrush x:Key="Muted" Color="#ABB3A3"/>
+    <SolidColorBrush x:Key="Mint" Color="#29392D"/>
+    <SolidColorBrush x:Key="SceneInk" Color="#F4F1E4"/>
+    <SolidColorBrush x:Key="SceneMuted" Color="#A9B5A6"/>
+    <DrawingBrush x:Key="Tolex" TileMode="Tile" Viewport="0,0,6,6" ViewportUnits="Absolute">
+      <DrawingBrush.Drawing><DrawingGroup><GeometryDrawing Brush="#1B211B" Geometry="M0,0 H6 V6 H0 Z"/><GeometryDrawing Brush="#242A22" Geometry="M0,1 H2 V2 H0 Z M3,4 H5 V5 H3 Z"/></DrawingGroup></DrawingBrush.Drawing>
+    </DrawingBrush>
+
+
+    <Style TargetType="TextBox">
+      <Setter Property="Foreground" Value="{StaticResource PanelInk}"/>
+      <Setter Property="CaretBrush" Value="#E4CEA1"/><Setter Property="SelectionBrush" Value="#526648"/>
+    </Style>
+    <Style TargetType="ScrollBar">
+      <Setter Property="Width" Value="8"/><Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="ScrollBar">
+        <Track x:Name="PART_Track" Orientation="{TemplateBinding Orientation}" IsDirectionReversed="True">
+          <Track.DecreaseRepeatButton><RepeatButton x:Name="PageBefore" Command="ScrollBar.PageUpCommand" Opacity="0" Focusable="False"/></Track.DecreaseRepeatButton>
+          <Track.Thumb><Thumb><Thumb.Template><ControlTemplate TargetType="Thumb"><Border Background="#5A6650" CornerRadius="3" Margin="1,2"/></ControlTemplate></Thumb.Template></Thumb></Track.Thumb>
+          <Track.IncreaseRepeatButton><RepeatButton x:Name="PageAfter" Command="ScrollBar.PageDownCommand" Opacity="0" Focusable="False"/></Track.IncreaseRepeatButton>
+        </Track>
+        <ControlTemplate.Triggers><Trigger Property="Orientation" Value="Horizontal"><Setter TargetName="PART_Track" Property="IsDirectionReversed" Value="False"/><Setter TargetName="PageBefore" Property="Command" Value="ScrollBar.PageLeftCommand"/><Setter TargetName="PageAfter" Property="Command" Value="ScrollBar.PageRightCommand"/></Trigger></ControlTemplate.Triggers>
+      </ControlTemplate></Setter.Value></Setter>
+      <Style.Triggers><Trigger Property="Orientation" Value="Horizontal"><Setter Property="Width" Value="Auto"/><Setter Property="Height" Value="8"/></Trigger></Style.Triggers>
+    </Style>
+
+    <Style TargetType="TextBlock">
+      <Setter Property="Foreground" Value="{StaticResource PanelInk}"/>
+      <Setter Property="TextWrapping" Value="Wrap"/>
+      <Setter Property="TextOptions.TextFormattingMode" Value="Ideal"/>
+    </Style>
+
+    <Style x:Key="PanelTitle" TargetType="TextBlock">
+      <Setter Property="FontSize" Value="25"/><Setter Property="FontWeight" Value="Bold"/><Setter Property="Foreground" Value="{StaticResource PanelInk}"/>
+    </Style>
+    <Style x:Key="SectionTitle" TargetType="TextBlock">
+      <Setter Property="FontSize" Value="15"/><Setter Property="FontWeight" Value="SemiBold"/><Setter Property="Foreground" Value="{StaticResource PanelInk}"/>
+    </Style>
+    <Style x:Key="FieldLabel" TargetType="TextBlock">
+      <Setter Property="FontSize" Value="12"/><Setter Property="Foreground" Value="{StaticResource PanelMuted}"/><Setter Property="Margin" Value="0,0,0,6"/>
+    </Style>
+    <Style x:Key="Caption" TargetType="TextBlock">
+      <Setter Property="FontSize" Value="11.5"/><Setter Property="Foreground" Value="{StaticResource PanelMuted}"/><Setter Property="TextWrapping" Value="Wrap"/><Setter Property="LineHeight" Value="18"/>
+    </Style>
+
+    <Style x:Key="FieldCombo" TargetType="ComboBox">
+      <Setter Property="Foreground" Value="{StaticResource PanelInk}"/>
+      <Setter Property="Background" Value="{StaticResource PanelField}"/>
+      <Setter Property="BorderBrush" Value="{StaticResource PanelFieldLine}"/>
+      <Setter Property="FontSize" Value="12.5"/>
+      <Setter Property="MinHeight" Value="38"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="ComboBox">
+            <Grid>
+              <Border x:Name="Shell" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" CornerRadius="8"/>
+              <ToggleButton Focusable="False" ClickMode="Press" Background="Transparent"
+                            IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+                <ToggleButton.Template><ControlTemplate TargetType="ToggleButton"><Border Background="Transparent"/></ControlTemplate></ToggleButton.Template>
+              </ToggleButton>
+              <ContentPresenter Margin="13,0,34,0" VerticalAlignment="Center" IsHitTestVisible="False"
+                                Content="{TemplateBinding SelectionBoxItem}"
+                                ContentTemplate="{TemplateBinding ItemTemplate}"
+                                ContentStringFormat="{TemplateBinding SelectionBoxItemStringFormat}"/>
+              <TextBlock Text="&#xE70D;" FontFamily="Segoe Fluent Icons" FontSize="10" Foreground="#7C8778"
+                         HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,13,0" IsHitTestVisible="False"/>
+              <Popup x:Name="PART_Popup" AllowsTransparency="True" IsOpen="{TemplateBinding IsDropDownOpen}" Placement="Bottom" PopupAnimation="Fade" Focusable="False">
+                <Border Background="{StaticResource PanelField}" BorderBrush="{StaticResource PanelFieldLine}" BorderThickness="1" CornerRadius="8"
+                        MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}" MaxHeight="{TemplateBinding MaxDropDownHeight}" Margin="0,4,0,0" Padding="4">
+                  <ScrollViewer VerticalScrollBarVisibility="Auto"><ItemsPresenter/></ScrollViewer>
+                </Border>
+              </Popup>
+            </Grid>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Shell" Property="BorderBrush" Value="#9FB0A2"/></Trigger>
+              <Trigger Property="IsKeyboardFocusWithin" Value="True"><Setter TargetName="Shell" Property="BorderBrush" Value="{StaticResource Forest}"/><Setter TargetName="Shell" Property="BorderThickness" Value="2"/></Trigger>
+              <Trigger Property="IsEnabled" Value="False"><Setter TargetName="Shell" Property="Opacity" Value=".5"/></Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+    <DataTemplate x:Key="LabelItem"><TextBlock Text="{Binding Label}" Foreground="{StaticResource PanelInk}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/></DataTemplate>
+    <DataTemplate x:Key="NameItem"><TextBlock Text="{Binding Name}" Foreground="{StaticResource PanelInk}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/></DataTemplate>
+
+    <Style TargetType="ComboBoxItem">
+      <Setter Property="Padding" Value="10,8"/><Setter Property="Foreground" Value="{StaticResource PanelInk}"/>
+      <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="ComboBoxItem">
+        <Border x:Name="Row" Background="Transparent" CornerRadius="6" Padding="{TemplateBinding Padding}">
+          <ContentPresenter/>
+        </Border>
+        <ControlTemplate.Triggers>
+          <Trigger Property="IsHighlighted" Value="True"><Setter TargetName="Row" Property="Background" Value="{StaticResource Mint}"/></Trigger>
+          <Trigger Property="IsSelected" Value="True"><Setter TargetName="Row" Property="Background" Value="#384B39"/></Trigger>
+        </ControlTemplate.Triggers>
+      </ControlTemplate></Setter.Value></Setter>
+    </Style>
+
+    <Style x:Key="PrimaryAction" TargetType="Button">
+      <Setter Property="Background" Value="{StaticResource Forest}"/><Setter Property="Foreground" Value="#F6F4EA"/>
+      <Setter Property="FontSize" Value="14"/><Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="MinHeight" Value="46"/><Setter Property="Padding" Value="22,0"/><Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Button">
+        <Border x:Name="Shell" Background="{TemplateBinding Background}" BorderBrush="#8F7853" BorderThickness="1" CornerRadius="3" Padding="{TemplateBinding Padding}">
+          <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" RecognizesAccessKey="True"/>
+        </Border>
+        <ControlTemplate.Triggers>
+          <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Shell" Property="Background" Value="{StaticResource ForestHover}"/></Trigger>
+          <Trigger Property="IsPressed" Value="True"><Setter TargetName="Shell" Property="Background" Value="#243B2D"/></Trigger>
+          <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Shell" Property="BorderBrush" Value="#8FAE97"/><Setter TargetName="Shell" Property="BorderThickness" Value="2"/></Trigger>
+          <Trigger Property="IsEnabled" Value="False">
+            <Setter TargetName="Shell" Property="Background" Value="#29352D"/><Setter Property="Foreground" Value="#9BA695"/>
+          </Trigger>
+        </ControlTemplate.Triggers>
+      </ControlTemplate></Setter.Value></Setter>
+    </Style>
+
+    <Style x:Key="GhostAction" TargetType="Button">
+      <Setter Property="Background" Value="#28332A"/><Setter Property="Foreground" Value="{StaticResource PanelInk}"/>
+      <Setter Property="FontSize" Value="13"/><Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="MinHeight" Value="44"/><Setter Property="Padding" Value="16,0"/><Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="BorderBrush" Value="{StaticResource PanelFieldLine}"/>
+      <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Button">
+        <Border x:Name="Shell" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" CornerRadius="3" Padding="{TemplateBinding Padding}">
+          <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" RecognizesAccessKey="True"/>
+        </Border>
+        <ControlTemplate.Triggers>
+          <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Shell" Property="Background" Value="#354336"/><Setter TargetName="Shell" Property="BorderBrush" Value="#758068"/></Trigger>
+          <Trigger Property="IsPressed" Value="True"><Setter TargetName="Shell" Property="Background" Value="#1E2A22"/></Trigger>
+          <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Shell" Property="BorderBrush" Value="{StaticResource Forest}"/><Setter TargetName="Shell" Property="BorderThickness" Value="2"/></Trigger>
+          <Trigger Property="IsEnabled" Value="False"><Setter TargetName="Shell" Property="Opacity" Value=".45"/></Trigger>
+        </ControlTemplate.Triggers>
+      </ControlTemplate></Setter.Value></Setter>
+    </Style>
+
+    <!-- The footswitch is the real listen action, not a decorative knob. -->
+    <Style x:Key="ListenFootswitch" TargetType="Button" BasedOn="{StaticResource PrimaryAction}">
+      <Setter Property="Background" Value="#354C39"/>
+      <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Button">
+        <Border x:Name="Pedal" Background="{TemplateBinding Background}" BorderBrush="#233328" BorderThickness="1" CornerRadius="3" Padding="12,5">
+          <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+            <Grid Width="29" Height="29" Margin="0,0,10,0"><Ellipse Fill="#7B8274" Stroke="#26352C" StrokeThickness="1"/><Ellipse Fill="#D4D6C9" Stroke="#A6AB9B" StrokeThickness="1" Margin="4"/><Ellipse Fill="#A9B0A1" Margin="9"/></Grid>
+            <ContentPresenter Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+          </Grid>
+        </Border>
+        <ControlTemplate.Triggers>
+          <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Pedal" Property="Background" Value="#47614A"/></Trigger>
+          <Trigger Property="IsPressed" Value="True"><Setter TargetName="Pedal" Property="Background" Value="#24382B"/></Trigger>
+          <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Pedal" Property="BorderBrush" Value="#CC9A54"/><Setter TargetName="Pedal" Property="BorderThickness" Value="2"/></Trigger>
+          <Trigger Property="IsEnabled" Value="False"><Setter TargetName="Pedal" Property="Background" Value="#29382D"/><Setter TargetName="Pedal" Property="BorderBrush" Value="#4C5F4B"/><Setter Property="Foreground" Value="#A6B59F"/></Trigger>
+        </ControlTemplate.Triggers>
+      </ControlTemplate></Setter.Value></Setter>
+    </Style>
+
+
+
+    <Style x:Key="QuietToggle" TargetType="CheckBox">
+      <Setter Property="Foreground" Value="{StaticResource SceneInk}"/><Setter Property="FontSize" Value="13"/><Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="CheckBox">
+        <Border Background="#33121C16" CornerRadius="8" Padding="12,8">
+          <StackPanel Orientation="Horizontal">
+            <Border x:Name="Box" Width="15" Height="15" CornerRadius="4" BorderBrush="#9FAE9C" BorderThickness="1.4" Background="#22FFFFFF" VerticalAlignment="Center"/>
+            <TextBlock x:Name="Tick" Text="&#xE73E;" FontFamily="Segoe Fluent Icons" FontSize="9" Foreground="#1B2A1F" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed" Width="15" Margin="0,0,-15,0"/>
+            <ContentPresenter Margin="9,0,0,0" VerticalAlignment="Center"/>
+          </StackPanel>
+        </Border>
+        <ControlTemplate.Triggers>
+          <Trigger Property="IsChecked" Value="True">
+            <Setter TargetName="Box" Property="Background" Value="{StaticResource SceneInk}"/><Setter TargetName="Box" Property="BorderBrush" Value="{StaticResource SceneInk}"/>
+            <Setter TargetName="Tick" Property="Visibility" Value="Visible"/>
+          </Trigger>
+          <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Box" Property="BorderBrush" Value="{StaticResource SceneInk}"/></Trigger>
+          <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Box" Property="BorderBrush" Value="#E8C37B"/></Trigger>
+        </ControlTemplate.Triggers>
+      </ControlTemplate></Setter.Value></Setter>
+    </Style>
+
+    <Style x:Key="PanelCheck" TargetType="CheckBox">
+      <Setter Property="Foreground" Value="{StaticResource PanelInk}"/><Setter Property="FontSize" Value="12.5"/><Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="CheckBox">
+        <StackPanel Orientation="Horizontal">
+          <Border x:Name="Box" Width="16" Height="16" CornerRadius="4" BorderBrush="#B9C0B2" BorderThickness="1.4" Background="{StaticResource PanelField}" VerticalAlignment="Center"/>
+          <TextBlock x:Name="Tick" Text="&#xE73E;" FontFamily="Segoe Fluent Icons" FontSize="9" Foreground="#F6F4EA" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed" Width="16" Margin="0,0,-16,0"/>
+          <ContentPresenter Margin="9,0,0,0" VerticalAlignment="Center"/>
+        </StackPanel>
+        <ControlTemplate.Triggers>
+          <Trigger Property="IsChecked" Value="True">
+            <Setter TargetName="Box" Property="Background" Value="{StaticResource Forest}"/><Setter TargetName="Box" Property="BorderBrush" Value="{StaticResource Forest}"/>
+            <Setter TargetName="Tick" Property="Visibility" Value="Visible"/>
+          </Trigger>
+          <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Box" Property="BorderBrush" Value="{StaticResource Forest}"/></Trigger>
+          <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Box" Property="BorderBrush" Value="#E3B266"/></Trigger>
+        </ControlTemplate.Triggers>
+      </ControlTemplate></Setter.Value></Setter>
+    </Style>
+
+    <Style x:Key="ModeSegment" TargetType="RadioButton">
+      <Setter Property="Foreground" Value="{StaticResource PanelMuted}"/><Setter Property="FontSize" Value="12.5"/><Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="RadioButton">
+        <Border x:Name="Shell" Background="Transparent" CornerRadius="2" Padding="10,6">
+          <StackPanel Orientation="Horizontal"><Ellipse x:Name="ChannelLamp" Width="7" Height="7" Fill="#8E8976" Margin="0,0,7,0" VerticalAlignment="Center"/><ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/></StackPanel>
+        </Border>
+        <ControlTemplate.Triggers>
+          <Trigger Property="IsChecked" Value="True"><Setter TargetName="Shell" Property="Background" Value="#4A4C36"/><Setter TargetName="ChannelLamp" Property="Fill" Value="#C47B2E"/><Setter Property="Foreground" Value="{StaticResource PanelInk}"/><Setter Property="FontWeight" Value="SemiBold"/></Trigger>
+          <Trigger Property="IsMouseOver" Value="True"><Setter Property="Foreground" Value="{StaticResource PanelInk}"/></Trigger>
+          <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Shell" Property="BorderBrush" Value="{StaticResource Forest}"/><Setter TargetName="Shell" Property="BorderThickness" Value="1"/></Trigger>
+        </ControlTemplate.Triggers>
+      </ControlTemplate></Setter.Value></Setter>
+    </Style>
+
+    <Style x:Key="PanelTabs" TargetType="TabControl">
+      <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="TabControl">
+        <Grid>
+          <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+          <TabPanel IsItemsHost="True" Grid.Row="0" Margin="24,6,24,0"/>
+          <ContentPresenter x:Name="PART_SelectedContentHost" ContentSource="SelectedContent" Grid.Row="1"/>
+        </Grid>
+      </ControlTemplate></Setter.Value></Setter>
+    </Style>
+
+    <Style x:Key="PanelTabItem" TargetType="TabItem">
+      <Setter Property="Foreground" Value="#8B9488"/><Setter Property="FontSize" Value="14"/><Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="TabItem">
+        <Border x:Name="Shell" Background="Transparent" BorderBrush="Transparent" BorderThickness="0,0,0,2" Padding="0,10,0,9" Margin="0,0,26,0">
+          <ContentPresenter ContentSource="Header" HorizontalAlignment="Center"/>
+        </Border>
+        <ControlTemplate.Triggers>
+          <Trigger Property="IsSelected" Value="True"><Setter TargetName="Shell" Property="BorderBrush" Value="{StaticResource PanelInk}"/><Setter Property="Foreground" Value="{StaticResource PanelInk}"/><Setter Property="FontWeight" Value="SemiBold"/></Trigger>
+          <Trigger Property="IsMouseOver" Value="True"><Setter Property="Foreground" Value="{StaticResource PanelInk}"/></Trigger>
+          <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Shell" Property="BorderBrush" Value="#8FAE97"/></Trigger>
+        </ControlTemplate.Triggers>
+      </ControlTemplate></Setter.Value></Setter>
+    </Style>
+
+    <Style x:Key="PanelSlider" TargetType="Slider">
+      <Setter Property="Height" Value="20"/>
+      <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Slider">
+        <Grid>
+          <Border Height="5" Background="#0D1711" BorderBrush="#4A5843" BorderThickness="0,0,0,1" CornerRadius="2" VerticalAlignment="Center"/>
+          <Track x:Name="PART_Track" VerticalAlignment="Center">
+            <Track.DecreaseRepeatButton><RepeatButton Command="Slider.DecreaseLarge"><RepeatButton.Template><ControlTemplate TargetType="RepeatButton"><Border Height="5" Background="{StaticResource Forest}" CornerRadius="3" VerticalAlignment="Center"/></ControlTemplate></RepeatButton.Template></RepeatButton></Track.DecreaseRepeatButton>
+            <Track.Thumb><Thumb Width="12" Height="18"><Thumb.Template><ControlTemplate TargetType="Thumb"><Border x:Name="Knob" BorderBrush="#101A13" BorderThickness="1" CornerRadius="2"><Border.Background><LinearGradientBrush StartPoint="0,0" EndPoint="1,0"><GradientStop Color="#ACA78A" Offset="0"/><GradientStop Color="#D7D1AF" Offset=".45"/><GradientStop Color="#737C61" Offset="1"/></LinearGradientBrush></Border.Background><Border Height="1" Background="#37402E" Margin="2,0" VerticalAlignment="Center"/></Border><ControlTemplate.Triggers><Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Knob" Property="BorderBrush" Value="#D2B879"/></Trigger></ControlTemplate.Triggers></ControlTemplate></Thumb.Template></Thumb></Track.Thumb>
+            <Track.IncreaseRepeatButton><RepeatButton Command="Slider.IncreaseLarge"><RepeatButton.Template><ControlTemplate TargetType="RepeatButton"><Border Background="Transparent"/></ControlTemplate></RepeatButton.Template></RepeatButton></Track.IncreaseRepeatButton>
+          </Track>
+        </Grid>
+      </ControlTemplate></Setter.Value></Setter>
+    </Style>
+
+    <Style x:Key="PanelMeter" TargetType="ProgressBar">
+      <Setter Property="Height" Value="6"/><Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="ProgressBar">
+        <Border Background="#111B15" CornerRadius="3">
+          <Grid x:Name="PART_Track"><Border x:Name="PART_Indicator" Background="{StaticResource Forest}" CornerRadius="3" HorizontalAlignment="Left"/></Grid>
+        </Border>
+      </ControlTemplate></Setter.Value></Setter>
+    </Style>
+
+    <DrawingBrush x:Key="DotDim" TileMode="Tile" Viewport="0,0,9,8" ViewportUnits="Absolute" Stretch="None">
+      <DrawingBrush.Drawing><GeometryDrawing Brush="#36432F"><GeometryDrawing.Geometry><EllipseGeometry Center="2,4" RadiusX="1.5" RadiusY="1.5"/></GeometryDrawing.Geometry></GeometryDrawing></DrawingBrush.Drawing>
+    </DrawingBrush>
+    <DrawingBrush x:Key="DotBright" TileMode="Tile" Viewport="0,0,9,8" ViewportUnits="Absolute" Stretch="None">
+      <DrawingBrush.Drawing><GeometryDrawing Brush="#7E9A6F"><GeometryDrawing.Geometry><EllipseGeometry Center="2,4" RadiusX="1.5" RadiusY="1.5"/></GeometryDrawing.Geometry></GeometryDrawing></DrawingBrush.Drawing>
+    </DrawingBrush>
+
+    <Style x:Key="DottedProgress" TargetType="ProgressBar">
+      <Setter Property="Height" Value="8"/><Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="ProgressBar">
+        <Grid>
+          <Rectangle Height="8" Fill="{StaticResource DotDim}"/>
+          <Grid x:Name="PART_Track">
+            <Rectangle x:Name="PART_Indicator" Height="8" Fill="{StaticResource DotBright}" HorizontalAlignment="Left"/>
+          </Grid>
+        </Grid>
+      </ControlTemplate></Setter.Value></Setter>
+    </Style>
+
+    <Style x:Key="QuietDisclosure" TargetType="Expander">
+      <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+      <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Expander">
+        <StackPanel>
+          <ToggleButton x:Name="HeaderSite" Content="{TemplateBinding Header}" IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" Cursor="Hand">
+            <ToggleButton.Template><ControlTemplate TargetType="ToggleButton">
+              <Border x:Name="HeaderShell" Background="Transparent" BorderBrush="{StaticResource PanelLine}" BorderThickness="0,1,0,0" Padding="0,13">
+                <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                  <ContentPresenter VerticalAlignment="Center" TextElement.Foreground="{StaticResource PanelMuted}" TextElement.FontSize="12.5"/>
+                  <TextBlock Grid.Column="1" x:Name="Chevron" Text="&#xE70D;" FontFamily="Segoe Fluent Icons" Foreground="#8B9488" FontSize="9" VerticalAlignment="Center"/>
+                </Grid>
+              </Border>
+              <ControlTemplate.Triggers>
+                <Trigger Property="IsChecked" Value="True"><Setter TargetName="Chevron" Property="RenderTransform"><Setter.Value><RotateTransform Angle="180" CenterX="5" CenterY="5"/></Setter.Value></Setter></Trigger>
+                <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="HeaderShell" Property="BorderBrush" Value="#C6C3B4"/></Trigger>
+              </ControlTemplate.Triggers>
+            </ControlTemplate></ToggleButton.Template>
+          </ToggleButton>
+          <ContentPresenter x:Name="ExpandSite" Visibility="Collapsed" ContentSource="Content"/>
+        </StackPanel>
+        <ControlTemplate.Triggers><Trigger Property="IsExpanded" Value="True"><Setter TargetName="ExpandSite" Property="Visibility" Value="Visible"/></Trigger></ControlTemplate.Triggers>
+      </ControlTemplate></Setter.Value></Setter>
+    </Style>
+
+    <Style x:Key="WindowButton" TargetType="Button">
+      <Setter Property="Width" Value="42"/><Setter Property="Height" Value="32"/><Setter Property="Foreground" Value="#B9C4B7"/>
+      <Setter Property="FontFamily" Value="Segoe Fluent Icons"/><Setter Property="FontSize" Value="10"/>
+      <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Button">
+        <Border x:Name="Shell" Background="Transparent" CornerRadius="6">
+          <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </Border>
+        <ControlTemplate.Triggers>
+          <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Shell" Property="Background" Value="#22FFFFFF"/><Setter Property="Foreground" Value="#F2EFE2"/></Trigger>
+        </ControlTemplate.Triggers>
+      </ControlTemplate></Setter.Value></Setter>
+    </Style>
+  </Window.Resources>
+
+  <Grid>
+    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="480"/></Grid.ColumnDefinitions>
+
+    <!-- ============================ the room ============================ -->
+    <Grid x:Name="PerformanceScene" Grid.Column="0" Background="#0A0F0C" ClipToBounds="True">
+      <pet:RehearsalRoomBackdrop x:Name="RoomBackdrop" Level="{Binding Value, ElementName=LevelMeter}"/>
+
+      <pet:SoundWave x:Name="SceneWave" VerticalAlignment="Bottom" Height="132" Margin="0,0,0,112"
+                     PixelStyle="True" CenterGap="0.26" PixelUnit="4" IsHitTestVisible="False"
+                     AutomationProperties.Name="实际接收声音的像素振幅包络"/>
+
+      <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Margin="40,26,0,0">
+        <TextBlock Text="GuitarSoul" Foreground="{StaticResource SceneInk}" FontSize="30" FontWeight="Bold"/>
+        <TextBlock Text="你的小观众。" Foreground="{StaticResource SceneMuted}" FontSize="13" Margin="1,2,0,0"/>
+        <TextBlock x:Name="SkyStatus" Text="本地时间 · 夜色" Foreground="#B6BDAA" FontSize="11" Margin="1,8,0,0" ToolTip="随本地时间连续变化的昼夜光影；日月轨迹为氛围模拟，月相为近似。"/>
+      </StackPanel>
+
+      <pet:PixelCat x:Name="CatPreview" Width="160" Height="168" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,88" Panel.ZIndex="3">
+        <pet:PixelCat.Effect><DropShadowEffect Color="#040A06" BlurRadius="14" ShadowDepth="8" Direction="270" Opacity=".7"/></pet:PixelCat.Effect>
+      </pet:PixelCat>
+
+      <StackPanel x:Name="PetCaption" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,24" Panel.ZIndex="4" MaxWidth="360">
+        <TextBlock x:Name="PetStatus" Text="它在等你带来声音" Foreground="{StaticResource SceneInk}" FontSize="15.5" FontWeight="SemiBold" TextAlignment="Center" TextWrapping="Wrap"/>
+        <TextBlock x:Name="ScenePetReaction" Text="" Foreground="#93A192" FontSize="12" Margin="0,6,0,0" TextAlignment="Center" TextWrapping="Wrap" AutomationProperties.Name="演奏场景中的猫回应"/>
+        <TextBlock x:Name="PetReaction" Foreground="#B9C6B4" FontSize="12" TextAlignment="Center" TextWrapping="Wrap" Visibility="Collapsed" AutomationProperties.Name="猫听见声音后的回应"/>
+        <TextBlock x:Name="PerformanceModeHint" Text="本地伴奏与独立玩家输入共同推动局内状态" Foreground="#7E8C7D" FontSize="11" TextAlignment="Center" Margin="0,4,0,0" Visibility="Collapsed"/>
+      </StackPanel>
+
+      <!-- One foot bar, one row: the scene's lower third belongs to the rug and the cat,
+           so the input state and the quiet switch share a single line instead of stacking
+           into the caption above. -->
+      <StackPanel x:Name="SceneFootBar" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="34,0,0,30">
+        <Border Background="#2E121C16" BorderBrush="#3A4E42" BorderThickness="1" CornerRadius="8" Padding="11,7" VerticalAlignment="Center">
+          <StackPanel Orientation="Horizontal">
+            <Border x:Name="PlayerEntryDot" Width="7" Height="7" CornerRadius="4" Background="#5F7E6C" VerticalAlignment="Center" Margin="0,0,8,0"/>
+            <TextBlock x:Name="PlayerEntryLabel" Text="连接独立输入" Foreground="#DDE6D6" FontSize="11.5" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" MaxWidth="196"/>
+          </StackPanel>
+        </Border>
+        <CheckBox x:Name="QuietMode" Content="安静陪着我" Checked="QuietMode_Changed" Unchecked="QuietMode_Changed" Style="{StaticResource QuietToggle}" Margin="14,0,0,0" VerticalAlignment="Center" ToolTip="暂停跟拍与主动短句，仍会倾听。停止接收声音请点「停止倾听」。" AutomationProperties.HelpText="暂停跟拍与主动短句，仍会倾听。"/>
+      </StackPanel>
+
+      <Button x:Name="DesktopPinButton" Content="让它待在桌面" Click="ShowPet_Click" Style="{StaticResource GhostAction}" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+              Margin="0,0,22,30" Padding="13,0" MinHeight="34" FontSize="12"/>
+    </Grid>
+
+    <!-- ============================ the panel ============================ -->
+    <Grid Grid.Column="1" Background="{x:Static pet:EquipmentMaterials.Graphite}">
+      <Border Margin="0,44,22,30" Background="{x:Static pet:EquipmentMaterials.Tolex}" BorderBrush="#5B6050" BorderThickness="1" CornerRadius="8" Padding="9,7">
+        <Border.Effect><DropShadowEffect Color="#020604" BlurRadius="34" ShadowDepth="10" Direction="180" Opacity=".55"/></Border.Effect>
+        <Grid Background="{x:Static pet:EquipmentMaterials.Graphite}">
+          <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+          <Grid Grid.Row="0" Margin="0" Background="{x:Static pet:EquipmentMaterials.Tolex}">
+            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+            <TextBlock x:Name="PageTitle" Text="陪你弹一会儿" Style="{StaticResource PanelTitle}" Foreground="#E8DFC5" FontSize="23" Margin="16,8,10,8"/>
+                        <Border Grid.Column="1" VerticalAlignment="Center" Background="#141D18" BorderBrush="#515845" BorderThickness="1" CornerRadius="2" Padding="2" HorizontalAlignment="Left" Margin="0,0,8,0">
+                          <Border.Style><Style TargetType="Border"><Setter Property="Visibility" Value="Collapsed"/><Style.Triggers><DataTrigger Binding="{Binding SelectedIndex, ElementName=MainTabs}" Value="0"><Setter Property="Visibility" Value="Visible"/></DataTrigger></Style.Triggers></Style></Border.Style>
+                          <StackPanel Orientation="Horizontal">
+                            <RadioButton x:Name="TogetherModeButton" GroupName="PerformanceMode" Content="一起弹" Style="{StaticResource ModeSegment}" Click="TogetherMode_Click"/>
+                            <RadioButton x:Name="FreeListenModeButton" GroupName="PerformanceMode" Content="自由倾听" Style="{StaticResource ModeSegment}" Click="FreeListenMode_Click"/>
+                          </StackPanel>
+                        </Border>
+
+          </Grid>
+          <TabControl x:Name="MainTabs" Grid.Row="1" Style="{StaticResource PanelTabs}" ItemContainerStyle="{StaticResource PanelTabItem}" BorderThickness="0" Background="Transparent" SelectionChanged="MainTabs_SelectionChanged" Margin="19,4,13,0">
+              <TabItem Header="陪伴">
+                <ScrollViewer x:Name="RackScroll" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,6,0">
+                  <!-- The column never ends in dead cream: when the viewport is taller than
+                       the controls, the room note drops to the foot of the card instead of
+                       leaving a blank block under the last row. -->
+                  <Grid MinHeight="{Binding ViewportHeight, ElementName=RackScroll}">
+                    <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+                    <StackPanel Grid.Row="0" Margin="0,4,0,0">
+
+
+<pet:EquipmentSurface x:Name="InputModule" Background="{x:Static pet:EquipmentMaterials.GreenMetal}" BorderBrush="#53674E" BorderThickness="1" CornerRadius="5" Padding="9"><StackPanel>
+                          <Grid>
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                            <StackPanel Margin="0,0,10,0">
+                              <StackPanel Orientation="Horizontal"><TextBlock Text="声音输入" Style="{StaticResource SectionTitle}" VerticalAlignment="Center"/>                            <Button x:Name="ChangeInputButton" Content="更换" Click="ChangeInput_Click" Style="{StaticResource GhostAction}" Visibility="Collapsed" MinHeight="24" Padding="7,0" Margin="8,0,0,0" FontSize="10.5" VerticalAlignment="Center"/></StackPanel>
+                              <TextBlock x:Name="ConnectionStatus" Foreground="{StaticResource PanelMuted}" FontSize="11.5" Margin="0,5,0,0" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" ToolTip="{Binding Text, RelativeSource={RelativeSource Self}}"/>
+                            </StackPanel>
+                      <Button Grid.Column="1" x:Name="ListenButton" Style="{StaticResource ListenFootswitch}" Margin="12,0,0,0" MinWidth="142" MinHeight="39" FontSize="12" Click="Listen_Click" IsEnabled="False" HorizontalAlignment="Left" ToolTip="开启或停止实际声音输入">
+                        <StackPanel Orientation="Horizontal">
+                          <TextBlock Text="&#xE720;" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" FontFamily="Segoe Fluent Icons" FontSize="14" Margin="0,0,9,0" VerticalAlignment="Center"/>
+                          <TextBlock x:Name="ListenButtonLabel" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" Text="开始倾听" VerticalAlignment="Center"/>
+                        </StackPanel>
+                      </Button>
+                          </Grid>
+                      <TextBlock x:Name="StepHint" Text="请选择输入设备" Style="{StaticResource Caption}" Margin="0,4,0,0"/>
+                      <StackPanel x:Name="InputPicker" Margin="0,6,0,0">
+                        <Grid>
+                          <Grid.ColumnDefinitions><ColumnDefinition Width="1*"/><ColumnDefinition Width="12"/><ColumnDefinition Width="1.15*"/></Grid.ColumnDefinitions>
+                          <StackPanel>
+                            <TextBlock Text="声音来源" Style="{StaticResource FieldLabel}"/>
+                            <ComboBox x:Name="SourceKindSelector" ItemTemplate="{StaticResource LabelItem}" SelectionChanged="SourceKind_Changed" Style="{StaticResource FieldCombo}" AutomationProperties.Name="声音来源"/>
+                          </StackPanel>
+                          <StackPanel Grid.Column="2">
+                            <TextBlock Text="输入设备" Style="{StaticResource FieldLabel}"/>
+                            <Grid>
+                              <ComboBox x:Name="InputDevices" ItemTemplate="{StaticResource NameItem}" SelectionChanged="Input_SelectionChanged" Style="{StaticResource FieldCombo}" AutomationProperties.Name="倾听设备" ToolTip="{Binding SelectedItem.Name, RelativeSource={RelativeSource Self}}"/>
+                              <TextBlock x:Name="InputDeviceHint" Text="选择效果器或声卡" IsHitTestVisible="False" Margin="14,0,32,0" VerticalAlignment="Center" Foreground="#A6AEA1" FontSize="12" TextTrimming="CharacterEllipsis"/>
+                            </Grid>
+                          </StackPanel>
+                        </Grid>
+
+                      </StackPanel>
+
+
+
+
+<TextBlock x:Name="InputWarning" Visibility="Collapsed" Foreground="#EB9D79" FontSize="11.5" TextWrapping="Wrap" Margin="0,8,0,0"/><StackPanel x:Name="InputMeterSection">                          <Grid Visibility="Collapsed">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                            <ProgressBar x:Name="LevelMeter" Minimum="0" Maximum="60" Value="0" Style="{StaticResource PanelMeter}" Visibility="Collapsed" VerticalAlignment="Center" AutomationProperties.Name="输入峰值电平"/>
+                            <TextBlock Grid.Column="1" x:Name="LevelLabel" Text="没有声音" Foreground="#8B9488" FontSize="11" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                          </Grid>
+                          <pet:RackVuMeter x:Name="InputVu" Level="{Binding Value, ElementName=LevelMeter}" ReducedMotion="{Binding ReducedMotion, ElementName=RoomBackdrop}" Height="138" Margin="0,6,0,0" ToolTip="输入峰值 dBFS；CLIP 表示连续触顶平顶，持续出现才显示可能削波提示。"/>
+</StackPanel></StackPanel></pet:EquipmentSurface>
+                      <Border Background="Transparent" Margin="0" Visibility="{Binding Visibility, ElementName=TrackDock}"><StackPanel>
+                        <Grid Height="164">
+                          <Image Source="Assets/amp-head-shell-v1.png" Stretch="Fill" IsHitTestVisible="False" RenderOptions.BitmapScalingMode="HighQuality"/>
+                          <StackPanel Margin="28,42,28,0" VerticalAlignment="Top">
+                            <TextBlock Text="GuitarSoul" FontFamily="Segoe Script" FontWeight="Bold" FontSize="25" Foreground="#F4F0DA" TextAlignment="Center">
+                              <TextBlock.Effect><DropShadowEffect Color="#000000" Direction="270" ShadowDepth="1.5" BlurRadius="1" Opacity=".9"/></TextBlock.Effect>
+                            </TextBlock>
+                            <TextBlock x:Name="TrackName" Text="" Foreground="#D4CCB7" FontSize="10.5" TextAlignment="Center" TextTrimming="CharacterEllipsis" ToolTip="{Binding Text, RelativeSource={RelativeSource Self}}"/>
+                          </StackPanel>
+                          <Border x:Name="TrackDock" Background="Transparent" Margin="28,94,28,26">
+                            <Grid>
+                              <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="58"/></Grid.ColumnDefinitions>
+                              <Button x:Name="ChooseTrackButton" Click="ChooseTrack_Click" Style="{StaticResource GhostAction}" HorizontalAlignment="Left" VerticalAlignment="Center" MinHeight="30" Padding="12,0" FontSize="12" ToolTip="选择本地伴奏；支持 MP3、WAV、MP4 等格式">
+                                <StackPanel Orientation="Horizontal"><TextBlock Text="&#xE8D6;" FontFamily="Segoe Fluent Icons" Margin="0,0,6,0"/><TextBlock Text="选择伴奏"/></StackPanel>
+                              </Button>
+                              <TextBlock Grid.Column="1" Text="音量" Foreground="#25271F" FontSize="10" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                              <pet:RotaryKnob Grid.Column="2" x:Name="Volume" Minimum="0" Maximum="1" Value="0.5" ValueChanged="Volume_Changed" Width="58" MinWidth="48" Height="44" MinHeight="44" Foreground="#24271E" HorizontalAlignment="Center" AutomationProperties.Name="伴奏音量" ToolTip="伴奏音量：上下拖动旋钮，或聚焦后使用方向键"/>
+                            </Grid>
+                          </Border>
+                        </Grid>
+                        <Grid x:Name="TrackTransport" Visibility="Collapsed" Margin="12,0,12,0">
+                          <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                          <Button x:Name="PlayButton" Content="播放" Click="Play_Click" IsEnabled="False" Style="{StaticResource PrimaryAction}" MinWidth="48" MinHeight="30" Padding="9,0" FontSize="11.5"/>
+                          <Button Grid.Column="1" x:Name="StopPlayButton" Content="停止" Click="StopPlay_Click" IsEnabled="False" Style="{StaticResource GhostAction}" Margin="5,0,0,0" MinHeight="30" Padding="9,0" FontSize="11.5"/>
+                          <Slider Grid.Column="2" x:Name="Seek" Minimum="0" Maximum="1" Value="0" PreviewMouseLeftButtonUp="Seek_Released" PreviewKeyUp="Seek_KeyUp" Style="{StaticResource PanelSlider}" Height="22" Margin="10,0" VerticalAlignment="Center" AutomationProperties.Name="伴奏播放进度" IsEnabled="False"/>
+                          <TextBlock Grid.Column="3" x:Name="TrackTime" Text="00:00 / 00:00" Foreground="#DDD1AE" FontFamily="Consolas" FontSize="10" VerticalAlignment="Center"/>
+                        </Grid>
+
+                      </StackPanel></Border>
+
+
+                      <pet:EquipmentSurface x:Name="ProgressionDetails" Background="{x:Static pet:EquipmentMaterials.Graphite}" BorderBrush="#62654E" BorderThickness="1" CornerRadius="5" Padding="12,9" Margin="0,4,0,0">
+                        <StackPanel>
+                          <DockPanel Margin="0,0,0,7">
+                            <WrapPanel x:Name="ProgressionActions" DockPanel.Dock="Right" HorizontalAlignment="Right">
+                              <Button x:Name="RestoreChordButton" Content="恢复" Click="RestoreChord_Click" Style="{StaticResource GhostAction}" MinHeight="26" Padding="8,0" Margin="0,0,5,0" FontSize="11" Visibility="Collapsed" ToolTip="恢复上一段或上次退出时留下的和弦草稿，不会启动倾听"/>
+                              <Button x:Name="SaveProgressionButton" Content="保存" Click="SaveProgression_Click" Style="{StaticResource GhostAction}" MinHeight="26" Padding="10,0" FontSize="11" IsEnabled="False"/>
+                              <Button x:Name="ClearProgressionButton" Content="清空" Click="ClearProgression_Click" Style="{StaticResource GhostAction}" MinHeight="26" Padding="10,0" Margin="5,0,0,0" FontSize="11" IsEnabled="False"/>
+                            </WrapPanel>
+                            <TextBlock Text="和弦记录" FontSize="14" FontWeight="SemiBold" Foreground="#E7DEC6" VerticalAlignment="Center" ToolTip="和弦识别草稿，可能漏记或识别错误。"/>
+                          </DockPanel>
+                          <Border Background="#101A17" BorderBrush="#35483B" BorderThickness="1" CornerRadius="3" Padding="12,6">
+                            <Grid>
+                              <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                              <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock x:Name="CurrentChordName" Text="—" FontSize="29" FontWeight="SemiBold" Foreground="#E7C889" MinWidth="62"/>
+                                <StackPanel VerticalAlignment="Center" Margin="10,0,0,0">
+                                  <TextBlock x:Name="CurrentChordContext" Text="等待和弦" FontSize="11" Foreground="#B7C5AE"/>
+                                  <TextBlock x:Name="KeyGuessLabel" FontSize="10.5" Foreground="#B7C5AE" Visibility="Collapsed"/>
+                                </StackPanel>
+                              </StackPanel>
+                              <ComboBox Grid.Column="1" x:Name="KeySelector" Width="104" ItemTemplate="{StaticResource LabelItem}" SelectionChanged="Key_Changed" Style="{StaticResource FieldCombo}" MinHeight="30" VerticalAlignment="Center" AutomationProperties.Name="和弦显示调性" ToolTip="选择调性以换算级数；自动调性只是推断。"/>
+                            </Grid>
+                          </Border>
+                          <ScrollViewer x:Name="ProgressionScroll" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Margin="0,8,0,0" MaxHeight="78"><StackPanel x:Name="ProgressionStrip" Orientation="Horizontal"/></ScrollViewer>
+                          <TextBlock x:Name="ProgressionHint" Text="弹奏后在这里留下和弦草稿" Foreground="#AFBBA6" FontSize="11" Margin="0,8,0,3"/>
+                        </StackPanel>
+                      </pet:EquipmentSurface>
+
+                      <Border x:Name="StageMomentBadge" Background="#151E18" BorderBrush="#4A5741" BorderThickness="1" CornerRadius="2" Padding="13,5" Margin="0,8,0,0">
+                        <StackPanel>
+                          <TextBlock x:Name="MusicCueStatus" Text="它在等你带来声音" FontSize="14" FontWeight="SemiBold" Foreground="#E3DDC9" TextTrimming="CharacterEllipsis"/>
+                          <ProgressBar x:Name="HighlightProgress" Minimum="0" Maximum="1" Value="0" Style="{StaticResource DottedProgress}" Margin="0" Visibility="Collapsed" AutomationProperties.Name="伴奏高光位置"/>
+                          <TextBlock x:Name="TrackArcStatus" Text="结构高光只来自所选本地伴奏，不会把电脑回放算作玩家贡献。" Foreground="#A9B5A1" FontSize="11" TextWrapping="Wrap" Margin="0,9,0,0" Visibility="Collapsed"/>
+                        </StackPanel>
+                      </Border>
+
+
+
+                    </StackPanel>
+
+
+                  </Grid>
+                </ScrollViewer>
+              </TabItem>
+
+              <TabItem x:Name="MemoriesTab" Header="留念">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,6,0">
+                  <StackPanel Margin="0,6,0,22">
+                    <Grid>
+                      <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                      <TextBlock Text="声音片段" Style="{StaticResource SectionTitle}" VerticalAlignment="Center"/>
+                      <CheckBox Grid.Column="1" x:Name="AutoRiffToggle" Content="让它自己留下" Checked="AutoRiff_Changed" Unchecked="AutoRiff_Changed" VerticalAlignment="Center" Style="{StaticResource PanelCheck}"/>
+                    </Grid>
+                    <TextBlock x:Name="AutoRiffStatus" Text="开启后，猫会偶尔留下演奏片段，只保存在这台电脑。" Style="{StaticResource Caption}" Margin="0,9,0,0"/>
+                    <TextBlock x:Name="AudienceNote" Margin="0,12,0,0" Style="{StaticResource Caption}"/>
+                    <ListBox x:Name="RiffList" ItemTemplate="{StaticResource LabelItem}" MaxHeight="200" Background="{StaticResource PanelField}" BorderBrush="{StaticResource PanelFieldLine}" Margin="0,12,0,4" MouseDoubleClick="RiffList_DoubleClick" AutomationProperties.Name="已收藏的 Riff" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Padding="2">
+                      <ListBox.ItemContainerStyle><Style TargetType="ListBoxItem"><Setter Property="Padding" Value="10,8"/><Setter Property="HorizontalContentAlignment" Value="Stretch"/><Setter Property="ToolTip" Value="{Binding Label}"/></Style></ListBox.ItemContainerStyle>
+                    </ListBox>
+                    <TextBlock x:Name="RiffEmpty" Style="{StaticResource Caption}"/>
+                    <WrapPanel x:Name="RiffActions" Visibility="Collapsed" Margin="0,12,0,0">
+                      <Button x:Name="PlayRiffButton" Content="回听所选" Click="PlayRiff_Click" Style="{StaticResource GhostAction}" MinHeight="34" Padding="13,0" FontSize="12.5"/>
+                      <Button Content="删除这段声音" Click="DeleteRiff_Click" Style="{StaticResource GhostAction}" Margin="8,0,0,0" MinHeight="34" Padding="13,0" FontSize="12.5"/>
+                    </WrapPanel>
+                    <Button Content="打开收藏文件夹" Click="OpenRiffs_Click" Style="{StaticResource GhostAction}" HorizontalAlignment="Left" Margin="0,10,0,0" MinHeight="34" Padding="13,0" FontSize="12.5"/>
+                    <Expander Header="给记忆添一句话" Style="{StaticResource QuietDisclosure}" Margin="0,16,0,0">
+                      <StackPanel Margin="0,10,0,0">
+                        <TextBlock Text="把想记得的这一刻，留个名字。" Style="{StaticResource SectionTitle}"/>
+                        <TextBlock Text="可以只写文字。音频附件来自你已收藏的 Riff，也可以使用猫主动留下的声音。" Style="{StaticResource Caption}" Margin="0,8,0,12"/>
+                        <CheckBox x:Name="MemoryInvitations" Content="允许它偶尔想听一段旧记忆" Checked="MemoryInvitations_Changed" Unchecked="MemoryInvitations_Changed" Style="{StaticResource PanelCheck}"/>
+                        <TextBlock Text="每次打开程序最多提起一次；在停弹时轻轻问，忽略就不再追问。「安静一点」也会关闭当下邀请。" Style="{StaticResource Caption}" Margin="0,8,0,14"/>
+                        <ListBox x:Name="MemoryList" ItemTemplate="{StaticResource LabelItem}" Height="84" SelectionChanged="Memory_SelectionChanged" AutomationProperties.Name="共同记忆列表" Background="{StaticResource PanelField}" BorderBrush="{StaticResource PanelFieldLine}" Padding="2"/>
+                        <TextBlock x:Name="MemorySummary" Text="还没有记忆。想留下时，再取个名字就好。" Style="{StaticResource Caption}" Margin="0,9,0,12"/>
+                        <TextBlock Text="名字" Style="{StaticResource FieldLabel}"/>
+                        <TextBox x:Name="MemoryTitle" MaxLength="80" MinHeight="36" Padding="10,7" AutomationProperties.Name="记忆名字" Margin="0,0,0,10" BorderBrush="{StaticResource PanelFieldLine}" Background="{StaticResource PanelField}" VerticalContentAlignment="Center"/>
+                        <WrapPanel>
+                          <Button Content="留下这段记忆" Click="SaveMemory_Click" Style="{StaticResource PrimaryAction}" MinHeight="36" Padding="14,0" FontSize="12.5" Margin="0,0,8,8"/>
+                          <Button Content="保存名称与备注" Click="EditMemory_Click" Style="{StaticResource GhostAction}" MinHeight="36" Padding="14,0" FontSize="12.5" Margin="0,0,8,8"/>
+                          <Button Content="清空填写" Click="NewMemory_Click" Style="{StaticResource GhostAction}" MinHeight="36" Padding="14,0" FontSize="12.5" Margin="0,0,0,8"/>
+                        </WrapPanel>
+                        <Expander Header="备注与已有 Riff 附件 · 可不填" Style="{StaticResource QuietDisclosure}" Margin="0,4,0,12">
+                          <StackPanel Margin="0,10,0,0">
+                            <TextBox x:Name="MemoryNotes" MaxLength="1000" Height="58" Padding="10,7" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AutomationProperties.Name="记忆备注" Margin="0,0,0,10" BorderBrush="{StaticResource PanelFieldLine}" Background="{StaticResource PanelField}"/>
+                            <CheckBox x:Name="AttachRiff" Content="附上 Riff 收藏页中选中的已有片段" Style="{StaticResource PanelCheck}"/>
+                          </StackPanel>
+                        </Expander>
+                        <WrapPanel>
+                          <Button Content="这次弹的是它" Click="ConfirmMemory_Click" Style="{StaticResource GhostAction}" MinHeight="34" Padding="13,0" FontSize="12.5" Margin="0,0,8,8"/>
+                          <Button Content="回听附件" Click="PlayMemory_Click" Style="{StaticResource GhostAction}" MinHeight="34" Padding="13,0" FontSize="12.5" Margin="0,0,8,8"/>
+                          <Button Content="删除所选记忆" Click="DeleteMemory_Click" Style="{StaticResource GhostAction}" MinHeight="34" Padding="13,0" FontSize="12.5" Margin="0,0,0,8"/>
+                        </WrapPanel>
+                        <TextBlock Text="删除记忆会同时移除它的关联，已收藏的音频仍保留。记忆只存在这台电脑的 Guitar Soul 数据目录；换花色不会清空。" Style="{StaticResource Caption}"/>
+                        <Button Content="打开记忆数据目录" Click="OpenMemories_Click" Style="{StaticResource GhostAction}" HorizontalAlignment="Left" Margin="0,10,0,0" MinHeight="34" Padding="13,0" FontSize="12.5"/>
+                      </StackPanel>
+                    </Expander>
+                  </StackPanel>
+                </ScrollViewer>
+              </TabItem>
+
+              <TabItem x:Name="StagesTab" Header="成就">
+                <ScrollViewer x:Name="StageScroll" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,6,0">
+                  <StackPanel Margin="0,6,0,22">
+                    <DockPanel LastChildFill="True">
+                      <TextBlock x:Name="StageCollectionStatus" DockPanel.Dock="Right" Foreground="{StaticResource AccentInk}" VerticalAlignment="Center" FontSize="13" FontWeight="SemiBold"/>
+                      <TextBlock Text="正常演奏，发现新的舞台形象。" Style="{StaticResource Caption}" VerticalAlignment="Center"/>
+                    </DockPanel>
+                    <ProgressBar x:Name="StageCollectionProgress" Height="4" Minimum="0" Maximum="9" Background="#111B15" Foreground="{StaticResource AccentInk}" BorderThickness="0" AutomationProperties.Name="已解锁成就数" Margin="0,12,0,16"/>
+                    <Border x:Name="StageDetail" Visibility="Collapsed" Background="{StaticResource Mint}" BorderBrush="#495C44" BorderThickness="1" CornerRadius="12" Padding="14" Margin="0,0,0,16">
+                      <StackPanel>
+                        <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="112"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                          <Border Background="#253A31" CornerRadius="8" Margin="0,0,12,0"><pet:PixelCat x:Name="StagePreview" Width="104" Height="118" AutomationProperties.Name="已解锁的舞台形象"/></Border>
+                          <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock x:Name="StageCharacterName" FontSize="17" FontWeight="SemiBold"/>
+                            <TextBlock x:Name="StageInstrument" Style="{StaticResource Caption}" Margin="0,5,0,5"/>
+                            <TextBlock x:Name="StageDescription" Style="{StaticResource Caption}"/>
+                            <TextBlock x:Name="StageUnlockedDate" Style="{StaticResource Caption}" Margin="0,6,0,0"/>
+                          </StackPanel>
+                        </Grid>
+                        <CheckBox x:Name="StageMotionPreview" Content="看看动作 · 模拟节奏，无声音" Checked="StageMotion_Changed" Unchecked="StageMotion_Changed" Margin="0,12,0,10" Style="{StaticResource PanelCheck}"/>
+                        <Button x:Name="UseStageButton" Content="一起弹时用这套" Style="{StaticResource PrimaryAction}" Click="UseStage_Click" HorizontalAlignment="Left" MinHeight="36" Padding="14,0" FontSize="12.5"/>
+                      </StackPanel>
+                    </Border>
+                    <ListBox x:Name="StageSelector" SelectionChanged="Stage_Changed" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" AutomationProperties.Name="演奏成就图鉴">
+                      <ListBox.ItemsPanel><ItemsPanelTemplate><UniformGrid Columns="2"/></ItemsPanelTemplate></ListBox.ItemsPanel>
+                      <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                          <Setter Property="HorizontalContentAlignment" Value="Stretch"/><Setter Property="Padding" Value="0"/><Setter Property="Margin" Value="0,0,6,8"/>
+                          <Setter Property="AutomationProperties.Name" Value="{Binding AccessibleName}"/>
+                          <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="ListBoxItem">
+                            <Border x:Name="Row" Background="#28332A" BorderBrush="#45513F" BorderThickness="1" CornerRadius="10" Padding="8,8"><ContentPresenter/></Border>
+                            <ControlTemplate.Triggers>
+                              <Trigger Property="IsSelected" Value="True"><Setter TargetName="Row" Property="Background" Value="#33482F"/><Setter TargetName="Row" Property="BorderBrush" Value="{StaticResource Forest}"/></Trigger>
+                              <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Row" Property="BorderBrush" Value="#B4BFB0"/></Trigger>
+                              <Trigger Property="IsKeyboardFocusWithin" Value="True"><Setter TargetName="Row" Property="BorderBrush" Value="#9A691F"/><Setter TargetName="Row" Property="BorderThickness" Value="2"/></Trigger>
+                            </ControlTemplate.Triggers>
+                          </ControlTemplate></Setter.Value></Setter>
+                        </Style>
+                      </ListBox.ItemContainerStyle>
+                      <ListBox.ItemTemplate><DataTemplate>
+                        <StackPanel MinHeight="120">
+                          <pet:StagePortrait Stage="{Binding Style}" IsLocked="{Binding Locked}" Width="66" Height="66" IsHitTestVisible="False"/>
+                          <TextBlock Text="{Binding Title}" Foreground="{StaticResource PanelInk}" FontSize="13.5" FontWeight="SemiBold" TextWrapping="Wrap" TextAlignment="Center" Margin="0,4,0,0"/>
+                          <TextBlock Text="{Binding Subtitle}" Foreground="{StaticResource AccentInk}" FontSize="12" Margin="0,3,0,0" TextAlignment="Center"/>
+                          <TextBlock Text="{Binding Hint}" Margin="2,5,2,0" TextAlignment="Center"><TextBlock.Style><Style TargetType="TextBlock" BasedOn="{StaticResource Caption}"><Setter Property="Visibility" Value="Collapsed"/><Style.Triggers><DataTrigger Binding="{Binding Locked}" Value="True"><Setter Property="Visibility" Value="Visible"/></DataTrigger></Style.Triggers></Style></TextBlock.Style></TextBlock>
+                        </StackPanel>
+                      </DataTemplate></ListBox.ItemTemplate>
+                    </ListBox>
+                    <TextBlock Text="接入吉他，在「陪伴」中开始倾听，正常演奏就有机会发现。电脑播放与动作预览不会解锁。" Style="{StaticResource Caption}" Margin="0,8,0,12"/>
+                    <TextBlock x:Name="StageActive" Style="{StaticResource Caption}"/>
+                    <Button x:Name="RestoreStageButton" Content="恢复日常形态" Click="RestoreStage_Click" Style="{StaticResource GhostAction}" HorizontalAlignment="Left" Margin="0,10,0,0" MinHeight="34" Padding="13,0" FontSize="12.5"/>
+                    <TextBlock x:Name="StageFeedback" TextWrapping="Wrap" Foreground="{StaticResource AccentInk}" Margin="0,10,0,0" AutomationProperties.LiveSetting="Polite"/>
+                    <Button x:Name="RetryAchievementButton" Content="重试保存成就" Visibility="Collapsed" Click="RetryAchievement_Click" Style="{StaticResource GhostAction}" HorizontalAlignment="Left" Margin="0,8,0,0" MinHeight="34" Padding="13,0" FontSize="12.5"/>
+                    <Expander x:Name="LegacyStageHistory" Header="旧版探索记录" Visibility="Collapsed" Style="{StaticResource QuietDisclosure}" Margin="0,12,0,0"><TextBlock x:Name="LegacyStageNotes" Style="{StaticResource Caption}" Margin="0,8,0,0"/></Expander>
+                  </StackPanel>
+                </ScrollViewer>
+              </TabItem>
+
+              <TabItem x:Name="SettingsTab" Header="设置">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,6,0">
+                  <StackPanel Margin="0,6,0,22">
+                      <Expander x:Name="PerformanceDetails" Header="演奏辅助" Style="{StaticResource QuietDisclosure}" Margin="0,4,0,0">
+                        <StackPanel Margin="0,0,0,8">
+                          <Grid Margin="0,8,0,12">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="70"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                            <TextBlock Text="和弦记录 · 空闲重置" Foreground="#D4DDCB" FontSize="12" VerticalAlignment="Center"/>
+                            <TextBox x:Name="ChordResetSecondsInput" Grid.Column="1" Text="15" LostFocus="ChordReset_Changed" KeyDown="ChordReset_KeyDown" MinHeight="30" VerticalContentAlignment="Center" Background="#132019" Foreground="#E7DFC8" BorderBrush="#61705A" Padding="8,2" AutomationProperties.Name="停止演奏多少秒后清空和弦记录"/>
+                            <TextBlock Grid.Column="2" Text="秒 · 0关闭" Foreground="#AFBDA5" FontSize="11" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                          </Grid>
+                          <Expander x:Name="PlaybackOptions" Header="播放输出设备" Visibility="Collapsed" Style="{StaticResource QuietDisclosure}" Margin="0,4,0,0">
+                        <StackPanel Margin="0,4,0,8" Background="#1A211D">
+                          <ComboBox x:Name="OutputDevices" ItemTemplate="{StaticResource NameItem}" SelectionChanged="Output_SelectionChanged" Style="{StaticResource FieldCombo}" AutomationProperties.Name="伴奏输出设备"/>
+                        </StackPanel>
+                      </Expander>
+                          <Expander x:Name="SoundDetails" Header="输入诊断" Style="{StaticResource QuietDisclosure}">
+                            <StackPanel Margin="0,4,0,10">
+                              <TextBlock x:Name="BeatStatus" Style="{StaticResource Caption}"/>
+                              <TextBlock x:Name="ActivityLabel" Text="还没有开始听" Style="{StaticResource Caption}" Margin="0,6,0,0"/>
+                              <TextBlock x:Name="RhythmStatus" Style="{StaticResource Caption}" Margin="0,6,0,0"/>
+                            </StackPanel>
+                          </Expander>
+                        </StackPanel>
+                      </Expander>
+                    <Expander x:Name="DeviceSettings" IsExpanded="False" Style="{StaticResource QuietDisclosure}">
+                      <Expander.Header><StackPanel Margin="0,2,0,2"><TextBlock Text="设备与校准" Style="{StaticResource SectionTitle}"/><TextBlock Text="输入通道、底噪校准、活动阈值" Style="{StaticResource Caption}" Margin="0,4,0,0"/></StackPanel></Expander.Header>
+                      <StackPanel Margin="0,6,0,14">
+                        <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                          <TextBlock Text="输入声道与接收" Style="{StaticResource FieldLabel}" VerticalAlignment="Center"/>
+                          <Button Grid.Column="1" Content="刷新设备" Click="Refresh_Click" Style="{StaticResource GhostAction}" MinHeight="32" Padding="12,0" FontSize="12"/></Grid>
+                        <Grid Margin="0,10,0,0"><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="130"/></Grid.ColumnDefinitions>
+                          <TextBlock x:Name="InputFormat" Text="请选择综合效果器或声卡，不会自动启用麦克风。" Style="{StaticResource Caption}" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                          <ComboBox Grid.Column="1" x:Name="InputChannels" ItemTemplate="{StaticResource NameItem}" SelectionChanged="InputChannel_Changed" AutomationProperties.Name="输入通道" Style="{StaticResource FieldCombo}" MinHeight="34"/></Grid>
+                        <TextBlock x:Name="DeviceHint" Text="QME-10：使用录音/数据 USB 口。其他品牌也可直接选择输入设备。" Style="{StaticResource Caption}" Margin="0,10,0,12"/>
+                        <StackPanel Orientation="Horizontal"><Button x:Name="CalibrateButton" Content="校准静音底噪" Click="Calibrate_Click" IsEnabled="False" Style="{StaticResource GhostAction}" MinHeight="34" Padding="13,0" FontSize="12.5"/><Button Content="导出设备诊断" Click="ExportDiagnostics_Click" Style="{StaticResource GhostAction}" Margin="8,0,0,0" MinHeight="34" Padding="13,0" FontSize="12.5"/></StackPanel>
+                        <Grid Margin="0,14,0,0"><Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                          <TextBlock Text="活动阈值" Style="{StaticResource Caption}" VerticalAlignment="Center"/>
+                          <Slider Grid.Column="1" x:Name="Threshold" Minimum="-65" Maximum="-20" Value="-45" TickFrequency="1" IsSnapToTickEnabled="True" ValueChanged="Threshold_Changed" Margin="12,0" Style="{StaticResource PanelSlider}" AutomationProperties.Name="输入活动阈值"/>
+                          <TextBlock Grid.Column="2" x:Name="ThresholdLabel" Text="−45 dB" Style="{StaticResource Caption}" Width="56" VerticalAlignment="Center"/></Grid>
+                        <TextBlock x:Name="CalibrationText" Text="校准时保持琴弦安静；电平变化只说明有声音，不证明输入只有吉他。" Style="{StaticResource Caption}" Margin="0,8,0,0"/>
+                      </StackPanel>
+                    </Expander>
+
+                    <Expander Style="{StaticResource QuietDisclosure}">
+                      <Expander.Header><StackPanel Margin="0,2,0,2"><TextBlock Text="猫的样子与动作" Style="{StaticResource SectionTitle}"/><TextBlock Text="花色、一起弹时拿的琴、表达性格、动作幅度" Style="{StaticResource Caption}" Margin="0,4,0,0"/></StackPanel></Expander.Header>
+                      <StackPanel Margin="0,6,0,14">
+                        <ComboBox x:Name="SkinSelector" ItemTemplate="{StaticResource LabelItem}" SelectionChanged="Skin_Changed" AutomationProperties.Name="猫的皮肤" Style="{StaticResource FieldCombo}"/>
+                        <TextBlock Text="一起弹时，拿这把琴" Style="{StaticResource FieldLabel}" Margin="0,12,0,6"/>
+                        <ComboBox x:Name="GuitarSelector" ItemTemplate="{StaticResource LabelItem}" SelectedValuePath="Guitar" SelectionChanged="Guitar_Changed" AutomationProperties.Name="摇滚猫吉他款式" Style="{StaticResource FieldCombo}"/>
+                        <TextBlock x:Name="StageGuitarHint" Style="{StaticResource Caption}" Margin="0,8,0,14"/>
+                        <TextBlock Text="它的表达性格" Style="{StaticResource FieldLabel}"/>
+                        <ComboBox x:Name="ExpressionSelector" SelectedIndex="0" SelectionChanged="Expression_Changed" AutomationProperties.Name="猫的回应方式" Style="{StaticResource FieldCombo}"><ComboBoxItem Content="克制 · 话少一些，慢慢投入"/><ComboBoxItem Content="好奇 · 留意变化，更愿意加入"/></ComboBox>
+                        <TextBlock Text="相同的琴声，它会用不同的动作和短句回应。可以随时调整，花色与共同记忆不受影响。" Style="{StaticResource Caption}" Margin="0,8,0,16"/>
+                        <TextBlock Text="动作幅度" Style="{StaticResource FieldLabel}"/>
+                        <Slider x:Name="MotionAmount" Minimum="0" Maximum="1" Value="0.7" TickFrequency="0.1" IsSnapToTickEnabled="True" ValueChanged="Motion_Changed" AutomationProperties.Name="猫的动作幅度" Style="{StaticResource PanelSlider}" Margin="0,0,0,12"/>
+                        <CheckBox x:Name="ReduceMotion" Content="减少动态效果，保留表情与姿态" Checked="ReduceMotion_Changed" Unchecked="ReduceMotion_Changed" Style="{StaticResource PanelCheck}"/>
+                        <Border BorderBrush="{StaticResource PanelLine}" BorderThickness="0,1,0,0" Margin="0,16,0,0" Padding="0,14,0,0">
+                          <StackPanel>
+                            <CheckBox x:Name="PreviewMotion" Content="查看姿态预览（模拟节奏，无声音）" Checked="PreviewMotion_Changed" Unchecked="PreviewMotion_Changed" Style="{StaticResource PanelCheck}"/>
+                            <ComboBox x:Name="PreviewMood" Margin="0,10,0,10" AutomationProperties.Name="预览猫的状态" Style="{StaticResource FieldCombo}">
+                              <ComboBoxItem Content="等待 · 呼吸与眨眼"/>
+                              <ComboBoxItem Content="倾听 · 抬耳与点头"/>
+                              <ComboBoxItem Content="投入 · 踏爪与摇摆"/>
+                              <ComboBoxItem Content="休息 · 蜷睡与轻呼吸"/>
+                              <ComboBoxItem Content="一起弹 · 摇滚猫与吉他"/>
+                            </ComboBox>
+                            <TextBlock Text="稳定起音时跟拍；自由演奏时轻轻回应。显示的速度是起音间隔估计，可能与歌曲 BPM 不同。" Style="{StaticResource Caption}"/>
+                          </StackPanel>
+                        </Border>
+                      </StackPanel>
+                    </Expander>
+
+                    <Expander Style="{StaticResource QuietDisclosure}">
+                      <Expander.Header><StackPanel Margin="0,2,0,2"><TextBlock Text="猫的本地语言" Style="{StaticResource SectionTitle}"/><TextBlock Text="Qwen 只改写已确认的听感，不决定动作" Style="{StaticResource Caption}" Margin="0,4,0,0"/></StackPanel></Expander.Header>
+                      <StackPanel Margin="0,6,0,14">
+                        <CheckBox x:Name="LocalLanguageToggle" Content="使用本机 Qwen 丰富短句" Checked="LocalLanguage_Changed" Unchecked="LocalLanguage_Changed" Style="{StaticResource PanelCheck}"/>
+                        <TextBlock x:Name="LocalLanguageStatus" TextWrapping="Wrap" Style="{StaticResource Caption}" Margin="0,8,0,0" AutomationProperties.LiveSetting="Polite"/>
+                        <TextBlock Text="原始音频不会交给语言模型。Qwen 只看到温厚/明亮、长音/流动/密集、渐强/渐弱等结构化结果；超时、输出越界或模型缺失时自动使用原来的规则短句。" Style="{StaticResource Caption}" Margin="0,8,0,0"/>
+                      </StackPanel>
+                    </Expander>
+
+                    <Expander Style="{StaticResource QuietDisclosure}">
+                      <Expander.Header><StackPanel Margin="0,2,0,2"><TextBlock Text="录音与手动收藏" Style="{StaticResource SectionTitle}"/><TextBlock Text="30 秒回溯缓存、手动收藏、测试录音" Style="{StaticResource Caption}" Margin="0,4,0,0"/></StackPanel></Expander.Header>
+                      <StackPanel Margin="0,6,0,14">
+                        <CheckBox x:Name="RiffBufferToggle" Content="开启 30 秒回溯缓存" Checked="RiffBuffer_Changed" Unchecked="RiffBuffer_Changed" Style="{StaticResource PanelCheck}" Margin="0,0,0,8"/>
+                        <TextBlock x:Name="RiffBufferStatus" Text="开启后只在内存保留最近 30 秒，收藏时才写入文件。" Style="{StaticResource Caption}"/>
+                        <Button x:Name="SaveRiffButton" Content="收藏刚才 30 秒" Click="SaveRiff_Click" IsEnabled="False" Style="{StaticResource PrimaryAction}" HorizontalAlignment="Left" Margin="0,12,0,8" MinHeight="36" Padding="14,0" FontSize="12.5"/>
+                        <TextBlock Text="不足 30 秒时保存已有片段；保存所选通道，包含输入中混入的声音。" Style="{StaticResource Caption}"/>
+                        <TextBlock Text="留下一小段，检查输入是否正确。" Style="{StaticResource SectionTitle}" Margin="0,16,0,0"/>
+                        <TextBlock Text="从点击开始录制，保存当前所选通道；回溯保存请使用 Riff 收藏页。" Style="{StaticResource Caption}" Margin="0,8,0,12"/>
+                        <StackPanel Orientation="Horizontal"><Button x:Name="RecordButton" Content="开始测试录音" Click="Record_Click" IsEnabled="False" Style="{StaticResource GhostAction}" MinHeight="34" Padding="13,0" FontSize="12.5"/><TextBlock x:Name="RecordingTime" Text="最长 60 秒" VerticalAlignment="Center" Margin="12,0,0,0" Style="{StaticResource Caption}"/></StackPanel>
+                        <TextBlock x:Name="RecordingPath" Text="还没有保存测试录音。" Style="{StaticResource Caption}" Margin="0,12,0,6"/>
+                        <Button x:Name="OpenRecordingButton" Content="打开录音所在文件夹" Click="OpenRecording_Click" IsEnabled="False" Style="{StaticResource GhostAction}" HorizontalAlignment="Left" MinHeight="34" Padding="13,0" FontSize="12.5"/>
+                      </StackPanel>
+                    </Expander>
+
+                    <Border BorderBrush="{StaticResource PanelLine}" BorderThickness="0,1,0,0" Padding="0,16,0,0" Margin="0,14,0,0">
+                      <StackPanel>
+                        <TextBlock Text="关于" Style="{StaticResource SectionTitle}"/>
+                        <TextBlock x:Name="AboutVersion" Style="{StaticResource Caption}" Margin="0,6,0,0"/>
+                        <TextBlock Text="声音片段存在「文档 · Guitar Soul · Riffs」；设置、记忆和可选 Qwen 语言包存在本机数据目录。程序运行时不访问互联网，也不上传任何内容。" Style="{StaticResource Caption}" Margin="0,4,0,10"/>
+                        <Button Content="打开数据目录" Click="OpenDataFolder_Click" Style="{StaticResource GhostAction}" HorizontalAlignment="Left" MinHeight="34" Padding="13,0" FontSize="12.5"/>
+                      </StackPanel>
+                    </Border>
+                  </StackPanel>
+                </ScrollViewer>
+              </TabItem>
+            </TabControl>
+          <TextBlock x:Name="StatusMessage" Grid.Row="2" Text="准备就绪。" Foreground="#8B9488" FontSize="11" Margin="26,8,26,14" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" AutomationProperties.LiveSetting="Polite"/>
+        </Grid>
+      </Border>
+    </Grid>
+
+    <!-- window controls -->
+    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,10,12,0">
+      <Button Content="&#xE921;" Style="{StaticResource WindowButton}" Click="MinimizeWindow_Click" ToolTip="最小化" WindowChrome.IsHitTestVisibleInChrome="True"/>
+      <Button Content="&#xE922;" Style="{StaticResource WindowButton}" Click="MaximizeWindow_Click" ToolTip="最大化" WindowChrome.IsHitTestVisibleInChrome="True"/>
+      <Button Content="&#xE8BB;" Style="{StaticResource WindowButton}" Click="CloseWindow_Click" ToolTip="关闭" WindowChrome.IsHitTestVisibleInChrome="True"/>
+    </StackPanel>
+
+    <Border x:Name="AchievementToast" Grid.ColumnSpan="2" Panel.ZIndex="30" Visibility="Collapsed" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,240,42" Background="#1D2B22" BorderBrush="#C7B37A" BorderThickness="1" CornerRadius="14" Padding="18,14" AutomationProperties.LiveSetting="Polite">
+      <Grid>
+        <Grid.ColumnDefinitions><ColumnDefinition Width="86"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+        <pet:StagePortrait x:Name="AchievementToastPortrait" Width="78" Height="78" IsLocked="False" VerticalAlignment="Center" IsHitTestVisible="False"/>
+        <StackPanel Grid.Column="1" Margin="14,0,0,0" VerticalAlignment="Center">
+          <TextBlock x:Name="AchievementToastTitle" Foreground="#F5F2E7" FontSize="19" FontWeight="SemiBold" Margin="0,0,0,4"/>
+          <TextBlock x:Name="AchievementToastCharacter" Foreground="#C6D2C2" FontSize="13"/>
+          <WrapPanel Margin="0,11,0,0">
+            <Button Content="看看新形象" Click="OpenAchievement_Click" Style="{StaticResource GhostAction}" MinHeight="32" Padding="12,0" FontSize="12"/>
+            <Button Content="继续弹" Click="DismissAchievement_Click" Style="{StaticResource GhostAction}" Margin="8,0,0,0" MinHeight="32" Padding="12,0" FontSize="12"/>
+          </WrapPanel>
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <Border x:Name="MemoryInvitation" Grid.ColumnSpan="2" Panel.ZIndex="31" Visibility="Collapsed" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,240,42" Background="#F7F5EE" CornerRadius="14" Padding="18,14" MaxWidth="420">
+      <StackPanel>
+        <TextBlock x:Name="InvitationText" FontSize="13.5" TextWrapping="Wrap"/>
+        <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+          <Button Content="看看这段记忆" Click="OpenInvitation_Click" Style="{StaticResource PrimaryAction}" MinHeight="34" Padding="13,0" FontSize="12.5"/>
+          <Button Content="这次先不了" Click="DismissInvitation_Click" Style="{StaticResource GhostAction}" Margin="8,0,0,0" MinHeight="34" Padding="13,0" FontSize="12.5"/>
+        </StackPanel>
+      </StackPanel>
+    </Border>
+
+  </Grid>
+</Window>

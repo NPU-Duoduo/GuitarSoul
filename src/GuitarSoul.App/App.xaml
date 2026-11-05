@@ -1,0 +1,129 @@
+<Application x:Class="GuitarSoul.App.App" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" ShutdownMode="OnExplicitShutdown">
+  <Application.Resources>
+    <SolidColorBrush x:Key="Paper" Color="#F4F1EA"/>
+    <SolidColorBrush x:Key="Ink" Color="#25342C"/>
+    <SolidColorBrush x:Key="Muted" Color="#62675E"/>
+    <SolidColorBrush x:Key="Line" Color="#DDDCD2"/>
+    <SolidColorBrush x:Key="LineStrong" Color="#C9D1C5"/>
+    <SolidColorBrush x:Key="Green" Color="#3D6550"/>
+    <SolidColorBrush x:Key="Surface" Color="#ECEFE8"/>
+    <Style TargetType="Window"><Setter Property="FontFamily" Value="Microsoft YaHei UI, Segoe UI"/><Setter Property="FontSize" Value="14"/><Setter Property="Background" Value="{StaticResource Paper}"/><Setter Property="Foreground" Value="{StaticResource Ink}"/></Style>
+    <Style TargetType="TextBlock"><Setter Property="TextWrapping" Value="Wrap"/></Style>
+    <Style x:Key="Caption" TargetType="TextBlock"><Setter Property="TextWrapping" Value="Wrap"/><Setter Property="Foreground" Value="{StaticResource Muted}"/><Setter Property="FontSize" Value="13"/><Setter Property="LineHeight" Value="21"/></Style>
+    <Style x:Key="SectionTitle" TargetType="TextBlock"><Setter Property="FontSize" Value="18"/><Setter Property="FontWeight" Value="SemiBold"/><Setter Property="Margin" Value="0,0,0,12"/></Style>
+    <Style TargetType="Button">
+      <Setter Property="Background" Value="#E5E9E0"/><Setter Property="Foreground" Value="{StaticResource Ink}"/><Setter Property="BorderBrush" Value="#C6CEC0"/><Setter Property="Padding" Value="15,9"/><Setter Property="MinHeight" Value="38"/><Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Button"><Border x:Name="Shell" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" CornerRadius="5" Padding="{TemplateBinding Padding}"><ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" RecognizesAccessKey="True"/></Border><ControlTemplate.Triggers><Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Shell" Property="Opacity" Value="0.82"/></Trigger><Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Shell" Property="BorderBrush" Value="#B47B22"/><Setter TargetName="Shell" Property="BorderThickness" Value="2"/></Trigger><Trigger Property="IsEnabled" Value="False"><Setter TargetName="Shell" Property="Opacity" Value="0.42"/></Trigger></ControlTemplate.Triggers></ControlTemplate></Setter.Value></Setter>
+    </Style>
+    <Style x:Key="PrimaryButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+      <Setter Property="Background" Value="{StaticResource Green}"/>
+      <Setter Property="Foreground" Value="White"/>
+      <Setter Property="BorderBrush" Value="{StaticResource Green}"/>
+      <!-- The base button dims to 42% when disabled, which makes white-on-green unreadable.
+           The primary action keeps a solid, legible surface and changes colour instead. -->
+      <Setter Property="Template"><Setter.Value>
+        <ControlTemplate TargetType="Button">
+          <Border x:Name="Shell" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" CornerRadius="5" Padding="{TemplateBinding Padding}">
+            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" RecognizesAccessKey="True"/>
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Shell" Property="Opacity" Value="0.88"/></Trigger>
+            <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Shell" Property="BorderBrush" Value="#B47B22"/><Setter TargetName="Shell" Property="BorderThickness" Value="2"/></Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter TargetName="Shell" Property="Background" Value="#E3E7DE"/>
+              <Setter TargetName="Shell" Property="BorderBrush" Value="#D3D9CC"/>
+              <Setter Property="Foreground" Value="#606B5D"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value></Setter>
+    </Style>
+    <Style TargetType="ComboBox"><Setter Property="MinHeight" Value="38"/><Setter Property="Padding" Value="8,6"/><Setter Property="Background" Value="#FBFAF6"/><Setter Property="Foreground" Value="{StaticResource Ink}"/><Setter Property="BorderBrush" Value="{StaticResource LineStrong}"/><Setter Property="FontSize" Value="13"/><Setter Property="VerticalContentAlignment" Value="Center"/><Setter Property="HorizontalContentAlignment" Value="Stretch"/></Style>
+    <!-- The default check box glyph is dark on a dark sidebar, so it reads as a solid block. -->
+    <Style x:Key="SidebarCheck" TargetType="CheckBox">
+      <Setter Property="Foreground" Value="#CED9CA"/>
+      <Setter Property="FontSize" Value="12"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="Template"><Setter.Value>
+        <ControlTemplate TargetType="CheckBox">
+          <StackPanel Orientation="Horizontal" Background="Transparent">
+            <Border x:Name="Box" Width="14" Height="14" CornerRadius="3" BorderThickness="1" BorderBrush="#8FA79A" Background="Transparent" VerticalAlignment="Center">
+              <TextBlock x:Name="Tick" Text="✓" FontSize="10" Foreground="#EFF3E6" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed"/>
+            </Border>
+            <ContentPresenter Margin="8,0,0,0" VerticalAlignment="Center"/>
+          </StackPanel>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsChecked" Value="True">
+              <Setter TargetName="Box" Property="Background" Value="#5A8467"/>
+              <Setter TargetName="Box" Property="BorderBrush" Value="#7FA98C"/>
+              <Setter TargetName="Tick" Property="Visibility" Value="Visible"/>
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="Box" Property="BorderBrush" Value="#C7DED5"/>
+            </Trigger>
+            <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Box" Property="BorderBrush" Value="#E9C46A"/><Setter TargetName="Box" Property="BorderThickness" Value="2"/></Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value></Setter>
+    </Style>
+    <Style x:Key="TextButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+      <Setter Property="Background" Value="Transparent"/><Setter Property="Foreground" Value="{StaticResource Green}"/>
+      <Setter Property="Padding" Value="10,6"/><Setter Property="BorderBrush" Value="Transparent"/>
+    </Style>
+    <Style TargetType="TabControl">
+      <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="TabControl">
+        <Grid KeyboardNavigation.TabNavigation="Local">
+          <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+          <Border BorderBrush="{StaticResource Line}" BorderThickness="0,0,0,1">
+            <TabPanel IsItemsHost="True" KeyboardNavigation.TabIndex="1" Background="Transparent"/>
+          </Border>
+          <ContentPresenter Grid.Row="1" x:Name="PART_SelectedContentHost" ContentSource="SelectedContent" KeyboardNavigation.TabIndex="2"/>
+        </Grid>
+      </ControlTemplate></Setter.Value></Setter>
+    </Style>
+    <Style TargetType="TabItem">
+      <Setter Property="FontSize" Value="14"/>
+      <Setter Property="Padding" Value="20,10"/><Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="TabItem">
+        <Border x:Name="TabShell" BorderBrush="Transparent" BorderThickness="1" Background="Transparent" Margin="0,0,8,0">
+          <Border x:Name="SelectionLine" BorderBrush="Transparent" BorderThickness="0,0,0,2" Padding="{TemplateBinding Padding}">
+            <ContentPresenter x:Name="TabHeader" ContentSource="Header" HorizontalAlignment="Center" VerticalAlignment="Center" RecognizesAccessKey="True" TextElement.Foreground="{StaticResource Muted}" TextElement.FontWeight="Normal"/>
+          </Border>
+        </Border>
+        <ControlTemplate.Triggers>
+          <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="TabShell" Property="Background" Value="#E9ECE3"/></Trigger>
+          <Trigger Property="IsSelected" Value="True"><Setter TargetName="TabHeader" Property="TextElement.Foreground" Value="{StaticResource Green}"/><Setter TargetName="TabHeader" Property="TextElement.FontWeight" Value="SemiBold"/><Setter TargetName="SelectionLine" Property="BorderBrush" Value="{StaticResource Green}"/></Trigger>
+          <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="TabShell" Property="BorderBrush" Value="#9A691F"/></Trigger>
+          <Trigger Property="IsEnabled" Value="False"><Setter TargetName="TabHeader" Property="TextElement.Foreground" Value="#7B8076"/></Trigger>
+        </ControlTemplate.Triggers>
+      </ControlTemplate></Setter.Value></Setter>
+    </Style>
+    <Style TargetType="Expander">
+      <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+      <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Expander">
+        <StackPanel>
+          <ToggleButton x:Name="HeaderSite" Content="{TemplateBinding Header}" ContentTemplate="{TemplateBinding HeaderTemplate}"
+                        IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                        HorizontalContentAlignment="Stretch" MinHeight="36" Foreground="{StaticResource Ink}" Cursor="Hand">
+            <ToggleButton.Template><ControlTemplate TargetType="ToggleButton">
+              <Border x:Name="HeaderBorder" BorderBrush="Transparent" BorderThickness="1" Background="Transparent" Padding="3,7">
+                <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="20"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                  <Path x:Name="Arrow" Data="M 0,0 L 4,4 L 8,0" Stroke="{StaticResource Green}" StrokeThickness="1.5" HorizontalAlignment="Center" VerticalAlignment="Center" RenderTransformOrigin=".5,.5"><Path.RenderTransform><RotateTransform Angle="-90"/></Path.RenderTransform></Path>
+                  <ContentPresenter Grid.Column="1" VerticalAlignment="Center" RecognizesAccessKey="True"/>
+                </Grid>
+              </Border>
+              <ControlTemplate.Triggers>
+                <Trigger Property="IsChecked" Value="True"><Setter TargetName="Arrow" Property="RenderTransform"><Setter.Value><RotateTransform Angle="0"/></Setter.Value></Setter></Trigger>
+                <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="HeaderBorder" Property="Background" Value="#E9ECE3"/></Trigger>
+                <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="HeaderBorder" Property="BorderBrush" Value="#9A691F"/></Trigger>
+                <Trigger Property="IsEnabled" Value="False"><Setter Property="Foreground" Value="#7B8076"/></Trigger>
+              </ControlTemplate.Triggers>
+            </ControlTemplate></ToggleButton.Template>
+          </ToggleButton>
+          <ContentPresenter x:Name="ExpandSite" Visibility="Collapsed" ContentSource="Content" Margin="24,0,0,0"/>
+        </StackPanel>
+        <ControlTemplate.Triggers><Trigger Property="IsExpanded" Value="True"><Setter TargetName="ExpandSite" Property="Visibility" Value="Visible"/></Trigger></ControlTemplate.Triggers>
+      </ControlTemplate></Setter.Value></Setter>
+    </Style>
+  </Application.Resources>
+</Application>

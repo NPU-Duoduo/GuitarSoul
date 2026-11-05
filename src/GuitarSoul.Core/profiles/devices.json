@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "profiles": [
+    {
+      "id": "sonicake-pocket-master-qme-10",
+      "manufacturer": "Sonicake",
+      "model": "Pocket Master / QME-10",
+      "displayNameHints": ["Pocket Master", "QME-10", "Sonicake"],
+      "documentedSampleRate": 44100,
+      "documentedBitsPerSample": 16,
+      "documentedChannels": 2,
+      "isHardwareVerified": false,
+      "isCaptureSmokeTested": true,
+      "notes": [
+        "仅根据设备显示名称提供型号提示，不代表可靠自动识别。",
+        "官方标注立体声 USB 录音规格为 44.1 kHz / 16-bit；共享模式的实际格式以 Windows 端点返回值为准。",
+        "2026-10-11 已在本机通过线路 (Pocket Master Audio) 打开 Windows WASAPI 共享采集，实际协商为 44.1 kHz / 32-bit IEEE float / 2 声道。",
+        "该实测只验证端点可采集和空闲底噪，不证明纯吉他、干湿声分离或伴奏没有混入。",
+        "请停止弹琴、只播放伴奏，再用通道对比和测试录音确认设备路由。"
+      ],
+      "sourceUrl": "https://www.sonicake.com/products/pocket-master"
+    }
+  ]
+}
